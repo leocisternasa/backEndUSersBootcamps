@@ -34,15 +34,6 @@ const Bootcamp = db.define(
   { timestamps: true }
 );
 
-// try {
-//   db.sync();
-// } catch (err) {
-//   console.error(
-//     "Something went wrong with the SYNC of the table Transferencia",
-//     err
-//   );
-// }
-
 module.exports = {
   Bootcamp,
 };

@@ -18,7 +18,6 @@ const createBootcamp = async (req, res) => {
     cue: cue,
     description: description,
   });
-  console.log("bootcamp creado con exito: ", req.body);
   res.send("Bootcamp creado con exito");
 };
 
@@ -86,6 +85,42 @@ const updateBootcamp = async (req, res) => {
   );
   res.send("Bootcamp actualizado con exito");
 };
+
+const adduser = async (req, res) => {
+  const { id } = req.data;
+  const { bootcampId } = req.body;
+
+  const usuario = await Usuario.findByPk(id);
+  const bootcamp = await Bootcamp.findByPk(bootcampId);
+
+  try {
+    await bootcamp.addUsuario(usuario);
+    if (!bootcamp)
+      return res.status(404).json({ error: "Bootcamp no encontrado" });
+    return res.send("Usuario agregado al bootcamp de forma correcto");
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
+const findByIdWithUsers = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const bootcampConUsuarios = await Bootcamp.findByPk(id, {
+      include: [
+        { model: Usuario, as: "usuarios", through: { attributes: [] } },
+      ],
+    });
+
+    if (!bootcampConUsuarios)
+      return res.status(404).json({ error: "bootcamps no encontrados" });
+
+    res.json(bootcampConUsuarios);
+  } catch (error) {
+    res.send(error.message);
+  }
+};
 module.exports = {
   createBootcamp,
   addUser,
@@ -93,4 +128,6 @@ module.exports = {
   findAll,
   updateBootcamp,
   getAllBootcamps,
+  adduser,
+  findByIdWithUsers,
 };

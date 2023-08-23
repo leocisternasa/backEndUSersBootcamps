@@ -1,5 +1,7 @@
 const { Usuario } = require("../models/user.model");
 
+// Falta crear el controlador que cambie el password
+
 const createUser = async (req, res) => {
   try {
     const usuario = req.body;
@@ -8,6 +10,7 @@ const createUser = async (req, res) => {
       firstName: usuario.firstName,
       lastName: usuario.lastName,
       email: usuario.email,
+      password: usuario.password,
     });
     console.log("se ha creado el siguiente usuario con exito: ", usuario);
     res.send("Usuario Creado con exito");
@@ -38,18 +41,17 @@ const findAll = async (req, res) => {
 const updateUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName } = req.body;
     const usuario = await Usuario.findByPk(id);
     if (!usuario)
       return res.status(404).json({ error: "Usuario no encontrado" });
     let firstNametoUpdate = firstName || usuario.dataValues.firstName;
     let lastNameToUpdate = lastName || usuario.dataValues.lastName;
-    let emailToUpdate = email || usuario.dataValues.email;
+
     await Usuario.update(
       {
         firstName: firstNametoUpdate,
         lastName: lastNameToUpdate,
-        email: emailToUpdate,
       },
       { where: { id: id } }
     );
@@ -72,7 +74,23 @@ const findUserBootcamps = async (req, res) => {
   const usuario = await Usuario.findByPk(id);
   if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
 
-  const usuarioConBootcamps = await usuario.getBootcamps();
+  let usuarioSinPassword = {};
+
+  for (let key in usuario.dataValues) {
+    if (key !== "password") {
+      usuarioSinPassword[key] = usuario[key];
+    }
+  }
+
+  let bootcampsDelUsuario = await usuario.getBootcamps();
+  bootcampsDelUsuario = bootcampsDelUsuario.map(
+    (bootcamp) => bootcamp.dataValues
+  );
+  const usuarioConBootcamps = {
+    usuario: usuarioSinPassword,
+    bootcamps: bootcampsDelUsuario,
+  };
+
   res.json(usuarioConBootcamps);
 };
 module.exports = {

@@ -1,9 +1,10 @@
 const Sequelize = require("sequelize");
 
 // 1. Creamos la base de datos
-const db = new Sequelize("db_bootcamp", "leonardocisternasalbornoz", "", {
+const db = new Sequelize("db_jwtbootcamp", "leonardocisternasalbornoz", "", {
   host: "localhost",
   dialect: "postgres",
+  logging: false,
 });
 
 // 2. Sincronozamos con la base de datos

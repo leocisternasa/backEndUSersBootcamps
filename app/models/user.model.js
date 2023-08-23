@@ -26,15 +26,19 @@ const Usuario = db.define(
     },
     email: {
       type: dt.STRING,
-      isEmail: true,
       allowNull: false,
       unique: true,
       validate: {
+        isEmail: true,
         len: {
           args: [2, 45],
           msg: "El email no puede ser de largo menor a 2",
         },
       },
+    },
+    password: {
+      type: dt.STRING,
+      allowNull: false,
     },
   },
   { timestamps: true }

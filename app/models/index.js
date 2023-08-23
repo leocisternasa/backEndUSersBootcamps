@@ -11,7 +11,10 @@ Usuario.belongsToMany(Bootcamp, {
 });
 
 //sincronizo base de datos
-
-db.sync();
+try {
+  db.sync();
+} catch (error) {
+  console.error("Error al soncronizar, db.sync(), con la base de datos");
+}
 
 module.exports = { Bootcamp, Usuario };

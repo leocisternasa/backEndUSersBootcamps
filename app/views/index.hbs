@@ -1,0 +1,43 @@
+{{> navbar_inside}}
+
+<h1>Bienvenid@ <span id="firstName"></span></h1>
+<div> 
+<h2>Tus bootcamps son los siguientes: <span id="sinBootcamps"></span></h2>
+<ul id="bootcamps"></ul>
+
+</div>
+
+<script>
+  
+  async function init() {
+    // 1. Recupero el token
+    const token = localStorage.getItem('token')
+    console.log(token)
+
+    // 2. Voy a buscar mis datos
+    const headers = { authorization: token}
+    const{ data } = await axios.get('/protegida', {
+      headers
+    }) 
+
+    const user = await axios.get(`/api/user/${data.id}`, {headers})
+   
+    try{
+    const bootcampsUsuario = await axios.get(`/usuarios/${data.id}/bootcamps`, {headers})
+    console.log(bootcampsUsuario.data.bootcamps)
+    if(bootcampsUsuario.data.bootcamps.length == 0) document.querySelector("#sinBootcamps").innerHTML = "Alumno sin bootcamps inscritos"
+    if(bootcampsUsuario.data.bootcamps.length > 0){
+      bootcampsUsuario.data.bootcamps.forEach(bootcamp => {
+        const li = document.createElement("li")
+        li.textContent = bootcamp.title
+        document.querySelector("#bootcamps").appendChild(li)}) }
+      
+    }catch(error){
+      console.log(error)
+    }
+    
+
+    document.querySelector('#firstName').innerHTML = user.data.firstName
+  }
+  init()
+</script>
